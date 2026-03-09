@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme.dart';
 import 'providers/providers.dart';
 import 'screens/auth/auth_screen.dart';
-import 'screens/auth/verify_email_screen.dart';
 import 'screens/home/home_shell.dart';
 
 class KigaliCityServicesApp extends ConsumerWidget {
@@ -32,9 +31,6 @@ class AuthGate extends ConsumerWidget {
       data: (user) {
         if (user == null) {
           return const AuthScreen();
-        }
-        if (!user.emailVerified) {
-          return const VerifyEmailScreen();
         }
         return const HomeShell();
       },

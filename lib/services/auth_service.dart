@@ -29,8 +29,6 @@ class AuthService {
       await credential.user?.updateDisplayName(displayName.trim());
     }
 
-    await credential.user?.sendEmailVerification();
-
     final User user = credential.user!;
     final UserProfile profile = UserProfile(
       uid: user.uid,

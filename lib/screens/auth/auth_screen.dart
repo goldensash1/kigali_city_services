@@ -22,6 +22,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
   final _signUpEmailController = TextEditingController();
   final _signUpPasswordController = TextEditingController();
 
+  bool _signInPasswordVisible = false;
+  bool _signUpPasswordVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -64,21 +67,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               ),
               const SizedBox(height: 8),
               const Text('Sign in or create an account to continue'),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: authState.isLoading
-                      ? null
-                      : () async {
-                          await ref
-                              .read(authControllerProvider.notifier)
-                              .signInWithGoogle();
-                        },
-                  icon: const Icon(Icons.mail_outline),
-                  label: const Text('Continue with Gmail'),
-                ),
-              ),
               const SizedBox(height: 24),
               TabBar(
                 controller: _tabController,
@@ -98,8 +86,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         const SizedBox(height: 12),
                         TextField(
                           controller: _signInPasswordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(labelText: 'Password'),
+                          obscureText: !_signInPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _signInPasswordVisible
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () => _signInPasswordVisible = !_signInPasswordVisible,
+                                );
+                              },
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
@@ -131,8 +133,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         const SizedBox(height: 12),
                         TextField(
                           controller: _signUpPasswordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(labelText: 'Password'),
+                          obscureText: !_signUpPasswordVisible,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _signUpPasswordVisible
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () => _signUpPasswordVisible = !_signUpPasswordVisible,
+                                );
+                              },
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(

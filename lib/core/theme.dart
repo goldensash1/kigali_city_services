@@ -33,6 +33,24 @@ class AppTheme {
           borderSide: const BorderSide(color: Color(0xFFE3E6EA)),
         ),
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: primaryBlue,
+        indicatorColor: Colors.white24,
+        elevation: 0,
+        height: 65,
+        labelTextStyle: MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12);
+          }
+          return const TextStyle(color: Colors.white70, fontSize: 12);
+        }),
+        iconTheme: MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
+            return const IconThemeData(color: Colors.white, size: 26);
+          }
+          return const IconThemeData(color: Colors.white70, size: 24);
+        }),
+      ),
     );
   }
 }

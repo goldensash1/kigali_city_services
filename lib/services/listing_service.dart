@@ -18,14 +18,17 @@ class ListingService {
     );
   }
 
+  /// Fetches listings created by the given user. Sorted by createdAt descending in memory
+  /// so no composite index (createdBy + createdAt) is required.
   Stream<List<Listing>> watchListingsByUser(String uid) {
     return _listingRef
         .where('createdBy', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map(Listing.fromFirestore).toList(),
-        );
+        .map((snapshot) {
+          final list = snapshot.docs.map(Listing.fromFirestore).toList();
+          list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return list;
+        });
   }
 
   Future<void> createListing(Listing listing) async {

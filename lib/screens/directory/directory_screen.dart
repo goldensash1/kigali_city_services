@@ -45,7 +45,7 @@ class DirectoryScreen extends ConsumerWidget {
               TextField(
                 onChanged: (value) => ref.read(searchQueryProvider.notifier).state = value,
                 decoration: InputDecoration(
-                  hintText: 'Search for service',
+                  hintText: 'Search for a service',
                   suffixIcon: const Icon(Icons.search),
                   fillColor: Colors.white,
                   filled: true,
@@ -64,23 +64,34 @@ class DirectoryScreen extends ConsumerWidget {
               if (items.isEmpty) {
                 return const Center(child: Text('No listings found.'));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final listing = items[index];
-                  return ListingCard(
-                    listing: listing,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ListingDetailScreen(listing: listing),
-                        ),
-                      );
-                    },
-                  );
-                },
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 8),
+                    child: Text(
+                      'Listings',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF0A2A67),
+                          ),
+                    ),
+                  ),
+                  ...List.generate(items.length, (index) {
+                    final listing = items[index];
+                    return ListingCard(
+                      listing: listing,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ListingDetailScreen(listing: listing),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ],
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
