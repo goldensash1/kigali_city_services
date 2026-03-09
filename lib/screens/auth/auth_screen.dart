@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../providers/providers.dart';
 
@@ -45,7 +46,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       next.whenOrNull(error: (error, _) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
+          SnackBar(content: Text(_formatAuthError(error))),
         );
       });
     });
@@ -63,6 +64,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               ),
               const SizedBox(height: 8),
               const Text('Sign in or create an account to continue'),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: authState.isLoading
+                      ? null
+                      : () async {
+                          await ref
+                              .read(authControllerProvider.notifier)
+                              .signInWithGoogle();
+                        },
+                  icon: const Icon(Icons.mail_outline),
+                  label: const Text('Continue with Gmail'),
+                ),
+              ),
               const SizedBox(height: 24),
               TabBar(
                 controller: _tabController,
@@ -144,6 +160,43 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
         ),
       ),
     );
+  }
+
+  String _formatAuthError(Object error) {
+    if (error is FirebaseAuthException) {
+      final String code = error.code.toLowerCase();
+      final String message = (error.message ?? '').toUpperCase();
+
+      if (code == 'internal-error' && message.contains('CONFIGURATION_NOT_FOUND')) {
+        return 'Firebase Auth is not fully configured for this project. '
+            'Enable Email/Password sign-in and refresh Firebase config files.';
+      }
+
+      switch (code) {
+        case 'sign_in_cancelled':
+          return 'Google sign-in was cancelled.';
+        case 'account-exists-with-different-credential':
+          return 'An account already exists with this email using another sign-in method.';
+        case 'network-request-failed':
+          return 'Network error. Check your internet connection and try again.';
+        case 'invalid-email':
+          return 'Please enter a valid email address.';
+        case 'invalid-credential':
+        case 'wrong-password':
+        case 'user-not-found':
+          return 'Incorrect email or password.';
+        case 'email-already-in-use':
+          return 'That email is already registered.';
+        case 'weak-password':
+          return 'Password is too weak. Use at least 6 characters.';
+        case 'too-many-requests':
+          return 'Too many attempts. Try again in a few minutes.';
+      }
+
+      return error.message ?? error.code;
+    }
+
+    return error.toString();
   }
 }
 

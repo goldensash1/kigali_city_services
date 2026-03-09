@@ -8,6 +8,7 @@ Flutter mobile app that helps Kigali residents discover and manage essential cit
 
 - **Authentication (Firebase Auth + email verification)**
   - Email/password **signup, login, and logout** using Firebase Authentication.
+  - **Continue with Gmail** using Google Sign-In and Firebase Authentication.
   - **Email verification enforced**: unverified users are redirected to a verification screen until their email is confirmed.
   - A **user profile document** is created/maintained in Firestore at `users/{uid}` for every authenticated user.
 
@@ -278,9 +279,85 @@ flutter run
 
 > Note: This project is designed and graded for **Android/iOS**. A pure web build will not meet the assignment requirements.
 
+### 9. Fix for `[firebase_auth/internal-error] CONFIGURATION_NOT_FOUND`
+
+If login/signup fails with:
+
+- `[firebase_auth/internal-error]`
+- `CONFIGURATION_NOT_FOUND`
+
+the problem is in Firebase project configuration, not in UI form inputs.
+
+Do the following in Firebase Console for project `kigalicityservices-250`:
+
+1. Open **Authentication -> Sign-in method** and enable **Email/Password**.
+2. Confirm both apps exist under **Project settings -> Your apps**:
+  - Android package: `com.example.kigali_city_services`
+  - iOS bundle ID: `com.example.kigaliCityServices`
+3. Re-download config files and replace local copies:
+  - `android/app/google-services.json`
+  - `ios/Runner/GoogleService-Info.plist`
+4. Re-run FlutterFire configuration so `lib/firebase_options.dart` is regenerated:
+
+```bash
+flutterfire configure --project kigalicityservices-250 --platforms android,ios
+```
+
+5. Clean and reinstall app:
+
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
+
+6. If it still fails, check in Google Cloud Console that API key restrictions are not blocking Identity Toolkit:
+  - **APIs & Services -> Credentials -> your Firebase API key**
+  - Application restrictions: use unrestricted during setup
+  - API restrictions: include **Identity Toolkit API** (or set to unrestricted during setup)
+
+Quick verification command:
+
+```bash
+curl -s "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=<YOUR_API_KEY>" \
+  -H "Content-Type: application/json" \
+  --data '{"email":"nobody@example.com","password":"wrongpass123","returnSecureToken":true}'
+```
+
+- If Firebase is configured correctly, you should get an auth error like `INVALID_LOGIN_CREDENTIALS`.
+- If you still get `CONFIGURATION_NOT_FOUND`, project/auth setup is still incomplete.
+
+### 10. Setup for "Continue with Gmail"
+
+After adding the button, complete this once in Firebase/Google Cloud:
+
+1. In Firebase Console, open **Authentication -> Sign-in method** and enable **Google**.
+2. In **Project settings -> General**, ensure your Android/iOS apps are registered with the same IDs used by this project:
+  - Android: `com.example.kigali_city_services`
+  - iOS: `com.example.kigaliCityServices`
+3. For Android, add SHA certificates to the Firebase Android app:
+  - Use `./gradlew signingReport` inside `android/` and copy SHA-1 (and SHA-256 if available).
+  - Paste fingerprints in Firebase Android app settings, then re-download `android/app/google-services.json`.
+4. For iOS, re-download `ios/Runner/GoogleService-Info.plist`.
+5. Run FlutterFire configure again to refresh `lib/firebase_options.dart`:
+
+```bash
+flutterfire configure --project kigalicityservices-250 --platforms android,ios
+```
+
+6. Run the app again:
+
+```bash
+flutter clean
+flutter pub get
+flutter run
+```
+
+If iOS Google login still does not open, add `REVERSED_CLIENT_ID` from `GoogleService-Info.plist` as a URL scheme in `ios/Runner/Info.plist` (URL Types).
+
 ---
 
-### 8. Demo Video Checklist (7–12 minutes)
+### 11. Demo Video Checklist (7–12 minutes)
 
 Use this checklist while recording your demo video to align with the rubric:
 

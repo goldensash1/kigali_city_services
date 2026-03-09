@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/user_profile.dart';
 
 class AuthService {
-  AuthService(this._auth, this._firestore);
+  AuthService(this._auth, this._firestore, this._googleSignIn);
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
+  final GoogleSignIn _googleSignIn;
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
 
@@ -49,7 +51,27 @@ class AuthService {
     await syncUserProfile();
   }
 
+  Future<void> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) {
+      throw FirebaseAuthException(
+        code: 'sign_in_cancelled',
+        message: 'Google sign-in was cancelled by the user.',
+      );
+    }
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await _auth.signInWithCredential(credential);
+    await syncUserProfile();
+  }
+
   Future<void> signOut() async {
+    await _googleSignIn.signOut();
     await _auth.signOut();
   }
 
