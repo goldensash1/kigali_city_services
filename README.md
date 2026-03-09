@@ -320,14 +320,3 @@ Use this checklist while recording your demo video to align with the rubric:
     - Key screens (Directory, My Listings, Map View, Settings, Auth, VerifyEmail) to explain how state flows from Firestore → providers → UI.
 
 ---
-
-### 9. Notes for the Written Reflection (PDF)
-
-Your separate **Implementation Reflection PDF** should:
-
-- Mention at least **two Firebase integration issues** you encountered (e.g., FlutterFire CLI setup, `xcodeproj` gem for iOS, storage configuration, Auth/Firestore permission issues).
-- Include **screenshots** of error messages and explain **how you fixed them**.
-- Highlight how using a **service + controller + provider** architecture helped you debug and reason about the app.
-
-You can reference this README and `docs/design_summary.md` when writing the reflection, but be sure the final PDF is in your **own words**.
-
