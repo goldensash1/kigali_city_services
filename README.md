@@ -2,8 +2,6 @@
 
 Flutter mobile app that helps Kigali residents discover and manage essential city services and public places, built with **Flutter**, **Firebase Authentication**, **Cloud Firestore**, **Google Maps**, and **Riverpod** for state management.
 
-This README is written to satisfy the assignment requirement for a clear explanation of **features**, **Firestore database structure**, **state management approach**, and **navigation structure**.
-
 ---
 
 ### 1. Features Overview
