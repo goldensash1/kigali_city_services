@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,41 +16,7 @@ class KigaliCityServicesApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Kigali City Services',
       theme: AppTheme.lightTheme,
-      home: const _FirebaseBootstrap(),
-    );
-  }
-}
-
-class _FirebaseBootstrap extends ConsumerWidget {
-  const _FirebaseBootstrap();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<FirebaseApp>(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Firebase init failed. Run flutterfire configure, then rebuild.\n\n${snapshot.error}',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        }
-
-        return const AuthGate();
-      },
+      home: const AuthGate(),
     );
   }
 }
